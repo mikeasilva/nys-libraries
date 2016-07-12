@@ -62,7 +62,7 @@ renovations %>%
   rename(Library = X) %>%
   summarise(Count=n()) %>%
   filter(Count>1) %>%
-  pandoc.table(.)
+  pandoc.table(., style = 'grid')
 ```
 
 There are `r renovations %>%
@@ -87,7 +87,7 @@ renovations <- renovations %>%
 We now have `r nrow(renovations)` libraries left in the data frame.  Let's take a look at the libraries renovations dates:
 
 ```{r first_summary, results='asis'}
-pandoc.table(summary(renovations$RENOVDATE))
+pandoc.table(summary(renovations$RENOVDATE), style = 'grid')
 ```
 
 The usage data only spans 1991 to 2014.  As noted in the methodology section, I will be testing for the effects using a 10 year to one year time horizion.  Consequently some libraries will be excluded because the renovation didn't occur in the time window.  As the time window shrinks the number of libraries included in the analysis will increase.  Since the usage data starts in 1991, we are going to treat all libraries with libraries with renovations before 1980 as if there was no renovation at all.
@@ -210,22 +210,6 @@ book_circulation %>%
 There is no discernable difference between the average number of visitors before a renovation occurs and after, for those libraries that have a renovation.  There is also no increase in book circulation.  In fact it declines after the renovation.
 
 This causes me to pause and think we need to understand the general trend in visits and circulation because it appears that they are both declining.
-
-```{r trend_visulizations, results='asis', eval=FALSE, echo=FALSE}
-visualize_trend <- function(df, measure){
-  df <- df %>%
-  group_by(year) %>%
-  summarise(average = mean(measurement), observations = n())
-  
-  print(qplot(df$year, df$average, xlab='Year', ylab=paste('Average',measure)))
-  
-  #print(pandoc.table(df))
-}
-
-visualize_trend(visits, 'Visits')
-
-visualize_trend(book_circulation,'Books Circulated')
-```
 
 ## Are the Two Groups Different?
 
