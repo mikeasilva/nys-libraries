@@ -62,7 +62,7 @@ renovations %>%
   rename(Library = X) %>%
   summarise(Count=n()) %>%
   filter(Count>1) %>%
-  pandoc.table(., style = 'grid')
+  pandoc.table(., style = 'rmarkdown')
 ```
 
 There are `r renovations %>%
@@ -87,7 +87,7 @@ renovations <- renovations %>%
 We now have `r nrow(renovations)` libraries left in the data frame.  Let's take a look at the libraries renovations dates:
 
 ```{r first_summary, results='asis'}
-pandoc.table(summary(renovations$RENOVDATE), style = 'grid')
+pandoc.table(summary(renovations$RENOVDATE), style = 'rmarkdown')
 ```
 
 The usage data only spans 1991 to 2014.  As noted in the methodology section, I will be testing for the effects using a 10 year to one year time horizion.  Consequently some libraries will be excluded because the renovation didn't occur in the time window.  As the time window shrinks the number of libraries included in the analysis will increase.  Since the usage data starts in 1991, we are going to treat all libraries with libraries with renovations before 1980 as if there was no renovation at all.

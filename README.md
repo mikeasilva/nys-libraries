@@ -58,136 +58,67 @@ renovations %>%
   rename(Library = X) %>%
   summarise(Count=n()) %>%
   filter(Count>1) %>%
-  pandoc.table(., style = 'grid')
+  pandoc.table(., style = 'rmarkdown')
 ```
 
 
 
-+--------------------------------+---------+
-|            Library             |  Count  |
-+================================+=========+
-|     Albany Public Library      |    7    |
-+--------------------------------+---------+
-|     Amherst Public Library     |    4    |
-+--------------------------------+---------+
-|    Brooklyn Public Library     |   64    |
-+--------------------------------+---------+
-| Buffalo and Erie County Public |    9    |
-|            Library             |         |
-+--------------------------------+---------+
-|      Canton Free Library       |    3    |
-+--------------------------------+---------+
-|    Catskill Public Library     |    2    |
-+--------------------------------+---------+
-|     Chatham Public Library     |    2    |
-+--------------------------------+---------+
-|   Cheektowaga Public Library   |    2    |
-+--------------------------------+---------+
-|     Chemung County Library     |    6    |
-|            District            |         |
-+--------------------------------+---------+
-|       Great Neck Library       |    4    |
-+--------------------------------+---------+
-|  Greater Poughkeepsie Library  |    2    |
-|            District            |         |
-+--------------------------------+---------+
-|     Greece Public Library      |    2    |
-+--------------------------------+---------+
-|  Half Hollow Hills Community   |    2    |
-|         Public Library         |         |
-+--------------------------------+---------+
-|     Hamburg Public Library     |    2    |
-+--------------------------------+---------+
-|    Harrison Public Library     |    2    |
-+--------------------------------+---------+
-|   Haverstraw Kings Daughters   |    2    |
-|         Public Library         |         |
-+--------------------------------+---------+
-|    Highland Public Library     |    2    |
-+--------------------------------+---------+
-|   Huntington Public Library    |    2    |
-+--------------------------------+---------+
-|   Irondequoit Public Library   |    2    |
-+--------------------------------+---------+
-|     Jordan Bramley Library     |    2    |
-+--------------------------------+---------+
-|   Long Beach Public Library    |    2    |
-+--------------------------------+---------+
-| Mary E. Seymour Memorial Free  |    2    |
-|            Library             |         |
-+--------------------------------+---------+
-|   Massapequa Public Library    |    2    |
-+--------------------------------+---------+
-|     Massena Public Library     |    2    |
-+--------------------------------+---------+
-| Middle Country Public Library  |    2    |
-+--------------------------------+---------+
-| Mount Pleasant Public Library  |    2    |
-+--------------------------------+---------+
-|  New Rochelle Public Library   |    2    |
-+--------------------------------+---------+
-|  New York Public Library, The  |   85    |
-|        Branch Libraries        |         |
-+--------------------------------+---------+
-|     Newburgh Free Library      |    2    |
-+--------------------------------+---------+
-|  Niagara Falls Public Library  |    2    |
-+--------------------------------+---------+
-|  North Castle Public Library   |    2    |
-+--------------------------------+---------+
-|    Northern Onondaga Public    |    3    |
-|            Library             |         |
-+--------------------------------+---------+
-|    Northport Public Library    |    2    |
-+--------------------------------+---------+
-| Onondaga County Public Library |    9    |
-+--------------------------------+---------+
-|    Oxford Memorial Library     |    2    |
-+--------------------------------+---------+
-|       Patterson Library        |    2    |
-+--------------------------------+---------+
-|  Port Jefferson Free Library   |    2    |
-+--------------------------------+---------+
-| Queens Borough Public Library  |   62    |
-+--------------------------------+---------+
-|    Rochester Public Library    |   11    |
-+--------------------------------+---------+
-|     Rye Free Reading Room      |    2    |
-+--------------------------------+---------+
-|   Schenectady County Public    |    9    |
-|            Library             |         |
-+--------------------------------+---------+
-|    Scottsville Free Library    |    2    |
-+--------------------------------+---------+
-|   Sea Cliff Village Library    |    2    |
-+--------------------------------+---------+
-|     Seneca Nation Library      |    2    |
-+--------------------------------+---------+
-| Sidney Memorial Public Library |    3    |
-+--------------------------------+---------+
-|   Smithtown Special Library    |    4    |
-|            District            |         |
-+--------------------------------+---------+
-|     Sullivan Free Library      |    2    |
-+--------------------------------+---------+
-|    Town Of Tonawanda Public    |    2    |
-|            Library             |         |
-+--------------------------------+---------+
-|      Troy Public Library       |    2    |
-+--------------------------------+---------+
-|    Westbury Memorial Public    |    2    |
-|            Library             |         |
-+--------------------------------+---------+
-|    Western Sullivan Public     |    3    |
-|            Library             |         |
-+--------------------------------+---------+
-| Woman's Round Lake Improvement |    2    |
-|            Society             |         |
-+--------------------------------+---------+
-|    Woodbury Public Library     |    2    |
-+--------------------------------+---------+
-|     Yonkers Public Library     |    3    |
-+--------------------------------+---------+
+|                    Library                    |  Count  |
+|:---------------------------------------------:|:-------:|
+|             Albany Public Library             |    7    |
+|            Amherst Public Library             |    4    |
+|            Brooklyn Public Library            |   64    |
+|    Buffalo and Erie County Public Library     |    9    |
+|              Canton Free Library              |    3    |
+|            Catskill Public Library            |    2    |
+|            Chatham Public Library             |    2    |
+|          Cheektowaga Public Library           |    2    |
+|        Chemung County Library District        |    6    |
+|              Great Neck Library               |    4    |
+|     Greater Poughkeepsie Library District     |    2    |
+|             Greece Public Library             |    2    |
+|  Half Hollow Hills Community Public Library   |    2    |
+|            Hamburg Public Library             |    2    |
+|            Harrison Public Library            |    2    |
+|   Haverstraw Kings Daughters Public Library   |    2    |
+|            Highland Public Library            |    2    |
+|           Huntington Public Library           |    2    |
+|          Irondequoit Public Library           |    2    |
+|            Jordan Bramley Library             |    2    |
+|           Long Beach Public Library           |    2    |
+|     Mary E. Seymour Memorial Free Library     |    2    |
+|           Massapequa Public Library           |    2    |
+|            Massena Public Library             |    2    |
+|         Middle Country Public Library         |    2    |
+|         Mount Pleasant Public Library         |    2    |
+|          New Rochelle Public Library          |    2    |
+| New York Public Library, The Branch Libraries |   85    |
+|             Newburgh Free Library             |    2    |
+|         Niagara Falls Public Library          |    2    |
+|          North Castle Public Library          |    2    |
+|       Northern Onondaga Public Library        |    3    |
+|           Northport Public Library            |    2    |
+|        Onondaga County Public Library         |    9    |
+|            Oxford Memorial Library            |    2    |
+|               Patterson Library               |    2    |
+|          Port Jefferson Free Library          |    2    |
+|         Queens Borough Public Library         |   62    |
+|           Rochester Public Library            |   11    |
+|             Rye Free Reading Room             |    2    |
+|       Schenectady County Public Library       |    9    |
+|           Scottsville Free Library            |    2    |
+|           Sea Cliff Village Library           |    2    |
+|             Seneca Nation Library             |    2    |
+|        Sidney Memorial Public Library         |    3    |
+|      Smithtown Special Library District       |    4    |
+|             Sullivan Free Library             |    2    |
+|       Town Of Tonawanda Public Library        |    2    |
+|              Troy Public Library              |    2    |
+|       Westbury Memorial Public Library        |    2    |
+|        Western Sullivan Public Library        |    3    |
+|    Woman's Round Lake Improvement Society     |    2    |
+|            Woodbury Public Library            |    2    |
+|            Yonkers Public Library             |    3    |
 
 There are 54 libraries with more than one renovation record.  Since the circulation and visitation data is aggregated, we are going to have to remove them from the data set.  This is problematic because they represent the libraries for the major population centers.
 
@@ -207,16 +138,14 @@ We now have 701 libraries left in the data frame.  Let's take a look at the libr
 
 
 ```r
-pandoc.table(summary(renovations$RENOVDATE), style = 'grid')
+pandoc.table(summary(renovations$RENOVDATE), style = 'rmarkdown')
 ```
 
 
 
-+--------+-----------+----------+--------+-----------+--------+--------+
 |  Min.  |  1st Qu.  |  Median  |  Mean  |  3rd Qu.  |  Max.  |  NA's  |
-+========+===========+==========+========+===========+========+========+
+|:------:|:---------:|:--------:|:------:|:---------:|:------:|:------:|
 |   0    |   1997    |   2006   |  1995  |   2011    |  2015  |  172   |
-+--------+-----------+----------+--------+-----------+--------+--------+
 
 The usage data only spans 1991 to 2014.  As noted in the methodology section, I will be testing for the effects using a 10 year to one year time horizion.  Consequently some libraries will be excluded because the renovation didn't occur in the time window.  As the time window shrinks the number of libraries included in the analysis will increase.  Since the usage data starts in 1991, we are going to treat all libraries with libraries with renovations before 1980 as if there was no renovation at all.
 
@@ -234,7 +163,7 @@ library(ggplot2)
 ggplot(renovations, aes(x=RENOVDATE)) + geom_histogram(binwidth = 1) + xlab('Renovation Date')
 ```
 
-![](Library_Investment_Examination_files/figure-html/renovation_date_histogram-1.png)
+![](Library_Investment_Examination_files/figure-html/renovation_date_histogram-1.png)<!-- -->
 
 There are 204 libraries that don't have a renovation date.  We can use them as a control group.
 
@@ -273,7 +202,7 @@ Let's confirm that this was properly done by visualizing the results:
 ggplot(renovations, aes(x=RENOVDATE, fill=group)) + geom_histogram(binwidth = 1, position="identity", alpha=0.2) + xlab('Renovation Date')
 ```
 
-![](Library_Investment_Examination_files/figure-html/control_and_test_group_renovation_date_histograms-1.png)
+![](Library_Investment_Examination_files/figure-html/control_and_test_group_renovation_date_histograms-1.png)<!-- -->
 
 Let's join the renovation data with the useage data:
 
