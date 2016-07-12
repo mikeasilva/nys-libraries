@@ -270,41 +270,33 @@ So with all these transformations we can take our first look at the data:
 visits %>%
   group_by(group, period) %>%
   summarise(average = mean(measurement), observations = n()) %>%
-  pander(.)
+  pandoc.table(., style = 'rmarkdown')
 ```
 
 
------------------------------------------
- group   period   average   observations 
-------- -------- --------- --------------
-Control  After   28533.02       1541     
 
-Control  Before  35178.09       2243     
-
- Test    After   87135.50       3803     
-
- Test    Before  87214.73       5223     
------------------------------------------
+|  group  |  period  |  average  |  observations  |
+|:-------:|:--------:|:---------:|:--------------:|
+| Control |  After   | 28533.02  |      1541      |
+| Control |  Before  | 35178.09  |      2243      |
+|  Test   |  After   | 87135.50  |      3803      |
+|  Test   |  Before  | 87214.73  |      5223      |
 
 ```r
 book_circulation %>%
   group_by(group, period) %>%
   summarise(average = mean(measurement), observations = n()) %>%
-  pander(.)
+  pandoc.table(., style = 'rmarkdown')
 ```
 
 
------------------------------------------
- group   period   average   observations 
-------- -------- --------- --------------
-Control  After   44945.18       1541     
 
-Control  Before  53104.17       2243     
-
- Test    After   115367.54      3803     
-
- Test    Before  119578.77      5223     
------------------------------------------
+|  group  |  period  |  average  |  observations  |
+|:-------:|:--------:|:---------:|:--------------:|
+| Control |  After   | 44945.18  |      1541      |
+| Control |  Before  | 53104.17  |      2243      |
+|  Test   |  After   | 115367.54 |      3803      |
+|  Test   |  Before  | 119578.77 |      5223      |
 
 There is no discernable difference between the average number of visitors before a renovation occurs and after, for those libraries that have a renovation.  There is also no increase in book circulation.  In fact it declines after the renovation.
 
