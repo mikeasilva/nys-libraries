@@ -1,0 +1,268 @@
+---
+title: "Library Investment Examination"
+author: "Mike Silva"
+date: "July 12, 2016"
+output:
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction  
+
+A [recent local new paper article](http://www.democratandchronicle.com/story/news/2016/05/31/libraries-thriving-electronic-age/83511222/) chronicled the role libraries are playing today.  They highlight some local libraries that have undergone major renovations.  In the article they claim:
+
+> The surge in popularity mirrors what other communities have seen. When they invest in libraries, the number of people using them goes up.
+
+The claim seemed to rely on anecdotal evidence, so I determined to examine this using data.  
+
+## Methodology
+
+In order to evaluate the accuracy of this statement, I will start by defining the investment in a library as a renovation.  This is consistent with the storyline.  I will compare usage before and after the investment.  If the claim is true, then the usage after should be higher than before.  I will define usage in terms of visits and circulations of books.
+
+I will evaluate the difference in the mean before and after the renovation.  I will test for these differences over a variety of time windows (i.e. 10 years to 1 year) to see how long the effect lasts (if it exists at all).
+
+### Data Used
+New York State Education Department (NYSED) puts together an annual report for public and association libraries.  This data is made available to the general public through Bibliostat Connect.  You can gain access by following the directions on [this page](http://www.nysl.nysed.gov/libdev/libs/index.html#Statistics).  The visits and circulation data is available through this source and spans 1991 to 2014.
+
+The annual report does ask the year of the last major renovation.  For some reason or another, this data is not available through Bibliostat Connect.  We requested this data for a research project at work directly from NYSED and received the latest (2014) data.
+
+#### Exploratory Analysis & Data Cleaning
+
+I am hosting all data on my Google Drive.  First I will load the data into the R evironment.
+
+```{r load_data, cache=TRUE}
+# Short URL to https://googledrive.com/host/0B9jKAdYAFCl3bk9jODNteXhYbFk/renovations.csv
+renovations <- read.csv('https://goo.gl/zxAMeH', na.strings = 'N/A', skip = 3, stringsAsFactors = FALSE)
+# Short URL to https://googledrive.com/host/0B9jKAdYAFCl3bk9jODNteXhYbFk/visits_timeseries.csv
+visits <- read.csv('https://goo.gl/CPXTJo', na.strings = 'N/A', stringsAsFactors = FALSE)
+# Short URL to https://googledrive.com/host/0B9jKAdYAFCl3bk9jODNteXhYbFk/book_circulation_timeseries.csv
+book_circulation <- read.csv('https://goo.gl/fyybwi', na.strings = 'N/A', stringsAsFactors = FALSE)
+```
+
+There are `r nrow(renovations)` records in the renovations data frame.  Some of them are blank lines and a source line.  I will remove them from the data set.
+
+```{r drop_blanks, message=FALSE}
+library(dplyr)
+renovations <- renovations %>%
+  filter(ifelse(NAME=='',0,1)==1)
+```
+
+We have `r nrow(renovations)` libraries left in the data frame.  Since we will be joining the renovations to the visits and circulation data, let's take a look at the names:
+
+```{r non_unique_libraries, results='asis'}
+library(pander)
+# Are they unique?
+renovations %>%
+  group_by(X) %>%
+  select(X) %>%
+  rename(Library = X) %>%
+  summarise(Count=n()) %>%
+  filter(Count>1) %>%
+  pandoc.table(.)
+```
+
+There are `r renovations %>%
+  group_by(X) %>%
+  select(X) %>%
+  rename(Library = X) %>%
+  summarise(Count=n()) %>%
+  filter(Count>1) %>%
+  nrow(.)` libraries with more than one renovation record.  Since the circulation and visitation data is aggregated, we are going to have to remove them from the data set.  This is problematic because they represent the libraries for the major population centers.
+
+
+```{r remove_multiples}
+renovations <- renovations %>%
+  group_by(X) %>%
+  select(X) %>%
+  summarise(Count=n()) %>%
+  filter(Count==1) %>%
+  select(-Count) %>%
+  merge(renovations)
+```
+
+We now have `r nrow(renovations)` libraries left in the data frame.  Let's take a look at the libraries renovations dates:
+
+```{r first_summary, results='asis'}
+pandoc.table(summary(renovations$RENOVDATE))
+```
+
+The usage data only spans 1991 to 2014.  As noted in the methodology section, I will be testing for the effects using a 10 year to one year time horizion.  Consequently some libraries will be excluded because the renovation didn't occur in the time window.  As the time window shrinks the number of libraries included in the analysis will increase.  Since the usage data starts in 1991, we are going to treat all libraries with libraries with renovations before 1980 as if there was no renovation at all.
+
+```{r remove_zeros}
+renovations <- renovations %>%
+  mutate(RENOVDATE = ifelse(RENOVDATE<=1980,NA,RENOVDATE))
+```
+
+Now let's visualize the renovation dates:
+
+```{r renovation_date_histogram, message=FALSE, warning=FALSE}
+library(ggplot2)
+ggplot(renovations, aes(x=RENOVDATE)) + geom_histogram(binwidth = 1) + xlab('Renovation Date')
+```
+
+There are `r nrow(renovations[is.na(renovations$RENOVDATE),])` libraries that don't have a renovation date.  We can use them as a control group.
+
+```{r set_groups}
+renovations <- renovations %>%
+  mutate(group = ifelse(is.na(RENOVDATE), 'Control','Test'))
+```
+
+To use the control group we need to assign a renovation date.  This will be done by selecting a date with a probability proportional to the test group.
+
+```{r set_control_group_renovation_dates}
+renovation_dates <- renovations %>%
+  filter(group == 'Test')
+
+renovation_dates <- renovation_dates$RENOVDATE
+
+# Get the count of N/A's
+control_observations <- renovations %>%
+  filter(group == 'Control') %>%
+  nrow(.)
+
+# Make it reproducable
+set.seed(42)
+control_renovation_dates <- sample(renovation_dates, control_observations)
+
+# Set the renovation date
+renovations[is.na(renovations$RENOVDATE),]$RENOVDATE <- control_renovation_dates
+```
+
+Let's confirm that this was properly done by visualizing the results:
+
+```{r control_and_test_group_renovation_date_histograms}
+ggplot(renovations, aes(x=RENOVDATE, fill=group)) + geom_histogram(binwidth = 1, position="identity", alpha=0.2) + xlab('Renovation Date')
+```
+
+Let's join the renovation data with the useage data:
+
+```{r merging_data_frames}
+visits <- renovations %>%
+  select(X, RENOVDATE, group) %>%
+  left_join(., visits, by=c("X"="Libraries")) %>%
+  rename(Libraries = X)
+
+book_circulation <- renovations %>%
+  select(X, RENOVDATE, group) %>%
+  left_join(., book_circulation, by=c("X"="Libraries")) %>%
+  rename(Libraries = X)
+```
+
+Now we need to transform the tables from wide to long:
+
+```{r wide_to_long, warning=FALSE}
+library(tidyr)
+wide_to_long <- function(df){
+  gather(df, year, measurement, X1991:X2014) %>%
+  mutate(year = as.numeric(substr(year,2,5))) %>%
+  mutate(measurement = as.numeric(gsub(',', '', measurement)))  
+}
+
+visits <- wide_to_long(visits)
+book_circulation <- wide_to_long(book_circulation)
+```
+
+Now we need to identify if the data is before or after the renovation and by how many years:
+
+```{r before_or_after}
+before_or_after <- function(df){
+  df %>%
+  mutate(n_years = abs(RENOVDATE - year)) %>%
+  mutate(period = ifelse(year < RENOVDATE, 'Before', 'After')) %>%
+  mutate(period = ifelse(year == RENOVDATE, NA, period))
+}
+
+visits <- before_or_after(visits)
+book_circulation <- before_or_after(book_circulation)
+```
+
+We are going to drop data from the year that the renovation occurs, and all observations missing a measurement:
+
+```{r drop_zeros_and_nas}
+drop_year_zero_and_nas <- function(df){
+  df %>%
+  filter(n_years > 0) %>%
+  filter(complete.cases(.))
+}
+
+visits <- drop_year_zero_and_nas(visits)
+book_circulation <- drop_year_zero_and_nas(book_circulation)
+```
+
+So with all these transformations we can take our first look at the data:
+
+```{r first_look, results='asis'}
+visits %>%
+  group_by(group, period) %>%
+  summarise(average = mean(measurement), observations = n()) %>%
+  pander(.)
+
+book_circulation %>%
+  group_by(group, period) %>%
+  summarise(average = mean(measurement), observations = n()) %>%
+  pander(.)
+```
+
+There is no discernable difference between the average number of visitors before a renovation occurs and after, for those libraries that have a renovation.  There is also no increase in book circulation.  In fact it declines after the renovation.
+
+This causes me to pause and think we need to understand the general trend in visits and circulation because it appears that they are both declining.
+
+```{r trend_visulizations, results='asis', eval=FALSE, echo=FALSE}
+visualize_trend <- function(df, measure){
+  df <- df %>%
+  group_by(year) %>%
+  summarise(average = mean(measurement), observations = n())
+  
+  print(qplot(df$year, df$average, xlab='Year', ylab=paste('Average',measure)))
+  
+  #print(pandoc.table(df))
+}
+
+visualize_trend(visits, 'Visits')
+
+visualize_trend(book_circulation,'Books Circulated')
+```
+
+## Are the Two Groups Different?
+
+First we will examine the two groups to see if there is a meaningful difference between the two.  If there are not then we can conclude that the journalist's claims are unfounded.
+
+```{r regression_functions}
+get_data <- function(df, n_years_threshold){
+  df <- df %>%
+    filter(n_years <= n_years_threshold) %>%
+    group_by(Libraries, group, period) %>%
+    summarise(measurement = mean(measurement), count=n()) %>%
+    filter(measurement>0) %>%
+    filter(count == n_years_threshold) %>%
+    select(-count) %>%
+    spread(period, measurement) %>%
+    mutate(Difference = After-Before)
+  df[complete.cases(df),]
+}
+
+are_the_groups_different <- function (df){
+  for(i in 1:10){
+    data <- get_data(df,i)
+    # Regression Model
+    model <- lm(Difference~group, data=data)
+    message(paste(i,'Year Window'))
+    print(summary(model))
+  }
+}
+
+```
+
+### Book Circulation
+```{r book_regression, comment=NA}
+are_the_groups_different(book_circulation)
+```
+
+### Visits
+```{r visit_regression, comment=NA}
+are_the_groups_different(visits)
+```
