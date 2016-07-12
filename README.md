@@ -163,7 +163,7 @@ library(ggplot2)
 ggplot(renovations, aes(x=RENOVDATE)) + geom_histogram(binwidth = 1) + xlab('Renovation Date')
 ```
 
-![](Library_Investment_Examination_files/figure-html/renovation_date_histogram-1.png)<!-- -->
+![](Library_Investment_Examination_files/figure-html/renovation_date_histogram-1.png)
 
 There are 204 libraries that don't have a renovation date.  We can use them as a control group.
 
@@ -202,7 +202,7 @@ Let's confirm that this was properly done by visualizing the results:
 ggplot(renovations, aes(x=RENOVDATE, fill=group)) + geom_histogram(binwidth = 1, position="identity", alpha=0.2) + xlab('Renovation Date')
 ```
 
-![](Library_Investment_Examination_files/figure-html/control_and_test_group_renovation_date_histograms-1.png)<!-- -->
+![](Library_Investment_Examination_files/figure-html/control_and_test_group_renovation_date_histograms-1.png)
 
 Let's join the renovation data with the useage data:
 
